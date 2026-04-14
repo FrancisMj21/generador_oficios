@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<title>Generador de Oficios</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📄 Generador de Oficios UGEL TACNA</h1>
+
+<div class="stats">
+
+<div class="card">
+<span>Total</span>
+<strong id="total">0</strong>
+</div>
+
+<div class="card green">
+<span>Generados</span>
+<strong id="generados">0</strong>
+</div>
+
+<div class="card orange">
+<span>Pendientes</span>
+<strong id="pendientes">0</strong>
+</div>
+
+</div>
+
+<button class="btn-primary" onclick="generarSeleccionados()">
+⚡ Ejecutar Generación
+</button>
+
+</header>
+
+<div class="container">
+
+<!-- FORMULARIO -->
+
+<div class="form-panel">
+
+<h2>Registrar nuevo</h2>
+
+<form id="formPersona">
+
+<label>Tipo persona</label>
+
+<select name="tipo_persona">
+<option>DOCENTE</option>
+<option>AUXILIAR</option>
+<option>ADMINISTRATIVO</option>
+</select>
+
+<label>Nombre completo</label>
+<input name="nombre">
+
+<label>Condición</label>
+
+<select name="condicion">
+<option>NOMBRADO</option>
+<option>CONTRATADO</option>
+</select>
+
+<label>Centro trabajo</label>
+<input name="centro_trabajo">
+
+<label>Teléfono</label>
+<input name="telefono">
+
+<label>Correo</label>
+<input name="correo">
+
+<label>Qué solicita</label>
+<input name="solicita">
+
+<label>Periodos</label>
+<textarea name="periodos"></textarea>
+
+<button type="submit">
+Agregar
+</button>
+
+</form>
+
+</div>
+
+
+<!-- TABLA -->
+
+<div class="table-panel">
+
+<h2>Listado de documentos</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th></th>
+<th>ID</th>
+<th>Tipo</th>
+<th>Nombre</th>
+<th>Condición</th>
+<th>Centro trabajo</th>
+<th>Solicita</th>
+<th>Periodos</th>
+<th>Estado</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaDocumentos">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="/static/app.js"></script>
+
+</body>
+</html>
