@@ -1,0 +1,42 @@
+OFICIO N° {{ numero_oficio }} - 2026-UFESC-URRHH/UGEL.T/GOB.REG.TACNA
+
+SEÑOR:
+{{ nombre }}
+{{ cargo }} {{ condicion }}
+{{ centro_trabajo }}
+
+DIRECCION: {{ direccion }}
+Tacna/Tacna/{{ provincia }}
+Teléfono: {{ telefono }}
+Correo electrónico: {{ correo }}
+
+ASUNTO      : FORMULO RESPUESTA
+REFERENCIA  : CUD. N° cud ( fecha )
+
+______________________________________________________________________________________
+
+Tengo el agrado de dirigirme a usted, para expresarle mi cordial saludo y a la vez brindar la debida atención al documento de la referencia, mediante el cual solicita el {{ solicita }}.
+
+Al respecto, se deberá tener presente que, el literal l, del artículo 41° de la Ley N° 29944, Ley de la Reforma Magisterial, expresa que los profesores tienen derecho al reconocimiento de oficio de su tiempo de servicios efectivos, del mismo modo la norma mencionada establece entre sus disposiciones complementarias, transitorias y finales, específicamente en la décima primera que para el cálculo de la asignación por tiempo de servicios se consideran los servicios prestados bajo los regímenes de la Ley N° 24029 y de la Ley 29062, incluyendo el tiempo de servicios prestado en la condición de contratado por servicios personales.
+
+De acuerdo con la R.V.M. Nº 112-2023-MINEDU, de fecha 07 de agosto del 2023 “Disposiciones que regulan los procedimientos técnicos del Escalafón Magisterial” en el sub numeral 6.1.8. se precisa que todo Acto resolutivo que reconoce al profesor nombrado el tiempo de servicio en su condición de contratado en el marco de la LRM, en el inciso a) dice, el profesor puede solicitar el reconocimiento de tiempo de servicio prestado en IIEE públicas, en condición de contratado, ante la DRE/UGEL donde se desempeña actualmente, adjuntando las resoluciones de contrato y las boletas o constancias de pago de remuneraciones y descuentos por dichos períodos.
+
+Inciso c) Para el caso de reconocimiento por los servicios prestados en la condición de contratado, se precisa que, no se deben considerar las resoluciones por reconocimiento de pago por periodos menores a treinta (30) días.
+
+Al respecto, se procedió a evaluar el expediente de la referencia, en el que se pudo verificar que le falta presentar las boletas y/o constancias de pago de remuneraciones que se indica. Por lo que, se exhorta cumplir con la subsanación de lo indicado para continuar con el procedimiento administrativo. Bajo su responsabilidad.
+
+• {{ periodos }}
+
+Sin otro particular, hago propicia la oportunidad para reiterarle las muestras de mi especial consideración y estima personal.
+
+Atentamente,
+
+GOBIERNO REGIONAL DE TACNA
+
+___________________________________________
+ABOG. EDICA CARINA CANQUI ATENCIO
+JEFE DE LA UNIDAD DE RECURSOS HUMANOS
+UGEL TACNA
+
+ECCA/J.URRHH
+MLUR/R.UFESC
