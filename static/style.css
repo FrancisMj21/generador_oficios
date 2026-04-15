@@ -45,6 +45,10 @@ body {
     padding: 2px 4px;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
 button,
 input,
 select,
@@ -806,6 +810,202 @@ td {
     box-shadow: 0 10px 20px rgba(24, 180, 103, 0.18);
 }
 
+.preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.preview-modal[hidden] {
+    display: none;
+}
+
+.preview-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 29, 45, 0.54);
+    backdrop-filter: blur(6px);
+}
+
+.preview-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(1080px, 100%);
+    max-height: calc(100vh - 48px);
+    background: #f6f8fc;
+    border: 1px solid rgba(223, 232, 243, 0.95);
+    border-radius: 22px;
+    box-shadow: 0 28px 70px rgba(24, 42, 73, 0.28);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f7fd 100%);
+    border-bottom: 1px solid var(--line);
+}
+
+.preview-toolbar strong {
+    display: block;
+    font-size: 18px;
+    color: #1e2f4c;
+}
+
+.preview-toolbar p {
+    margin: 4px 0 0;
+    color: #70829c;
+    font-size: 13px;
+}
+
+.preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preview-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: #eef3f9;
+}
+
+.preview-frame {
+    overflow: auto;
+    padding: 26px;
+    background:
+        radial-gradient(circle at top, rgba(31, 132, 247, 0.08), transparent 28%),
+        linear-gradient(180deg, #f4f8fe 0%, #edf3fa 100%);
+}
+
+.preview-paper {
+    width: min(820px, 100%);
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 18px 45px rgba(32, 57, 93, 0.16);
+    border: 1px solid #e5ebf4;
+    padding: 34px 42px;
+}
+
+.doc-preview {
+    color: #161616;
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.doc-preview-header {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.doc-preview-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doc-preview-shield {
+    font-size: 28px;
+    font-weight: 800;
+    color: #c45f5f;
+    letter-spacing: 0.04em;
+}
+
+.doc-preview-ugel {
+    font-size: 12px;
+    font-weight: 700;
+    color: #8f9db0;
+}
+
+.doc-preview-motto {
+    text-align: center;
+    font-size: 11px;
+    color: #606f85;
+    font-style: italic;
+}
+
+.doc-preview-motto p,
+.doc-preview-meta p,
+.doc-preview-topics p,
+.doc-preview-body p,
+.doc-preview-signature p,
+.doc-preview-mini p {
+    margin: 0;
+}
+
+.doc-preview-rule {
+    border-top: 1px solid #222;
+    margin: 12px 0;
+}
+
+.doc-preview-date {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.doc-preview-code {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.doc-preview-code span {
+    text-decoration: underline;
+}
+
+.doc-preview-meta,
+.doc-preview-topics {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.doc-preview-body {
+    display: grid;
+    gap: 12px;
+    text-align: justify;
+}
+
+.doc-preview-body p {
+    text-indent: 28px;
+}
+
+.doc-preview-periodos {
+    text-align: center;
+    display: grid;
+    gap: 3px;
+}
+
+.doc-preview-periodos-title {
+    font-weight: 700;
+}
+
+.doc-preview-signature {
+    margin-top: 18px;
+    text-align: center;
+    display: grid;
+    gap: 2px;
+}
+
+.doc-preview-mini {
+    margin-top: 12px;
+    text-align: left;
+    font-size: 11px;
+}
+
 @media (max-width: 1120px) {
     .layout-grid {
         grid-template-columns: 1fr;
@@ -834,6 +1034,22 @@ td {
     .table-filters,
     .inline-fields,
     .form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-dialog {
+        max-height: calc(100vh - 24px);
+    }
+
+    .preview-frame {
+        padding: 14px;
+    }
+
+    .preview-paper {
+        padding: 24px 18px;
+    }
+
+    .doc-preview-header {
         grid-template-columns: 1fr;
     }
 }

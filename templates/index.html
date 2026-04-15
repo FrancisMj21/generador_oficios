@@ -126,6 +126,18 @@
                 <label class="field-label" for="cargo_actual">Cargo actual</label>
                 <input id="cargo_actual" name="cargo_actual" placeholder="Ej: Profesor Nombrado">
 
+                <label class="field-label">Sexo <span>*</span></label>
+                <div class="toggle-group">
+                    <label class="toggle-card">
+                        <input type="radio" name="sexo" value="masculino" checked>
+                        <span>MASCULINO</span>
+                    </label>
+                    <label class="toggle-card">
+                        <input type="radio" name="sexo" value="femenino">
+                        <span>FEMENINO</span>
+                    </label>
+                </div>
+
                 <label class="field-label">Condici&oacute;n <span>*</span></label>
                 <div class="toggle-group">
                     {% for condicion in condiciones %}
@@ -240,7 +252,7 @@
                                         <span></span>
                                     </label>
                                 </td>
-                                <td class="mono-id">{{ "%03d"|format(p.id|int) if p.id is number or (p.id|string).isdigit() else p.id }}</td>
+                                <td class="mono-id" data-persona='{{ p|tojson|safe }}'>{{ "%03d"|format(p.id|int) if p.id is number or (p.id|string).isdigit() else p.id }}</td>
                                 <td>
                                     <span class="type-pill {{ 'blue' if tipo_lower == 'docente' else 'amber' if tipo_lower == 'auxiliar' else 'green' }}">
                                         {{ p.tipo_persona }}
@@ -317,6 +329,29 @@
             </aside>
         </section>
     </main>
+</div>
+
+<div id="previewModal" class="preview-modal" hidden>
+    <div class="preview-backdrop" onclick="cerrarPreview()"></div>
+    <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+        <div class="preview-toolbar">
+            <div>
+                <strong id="previewTitle">Previsualización del oficio</strong>
+                <p id="previewSubtitle">Documento administrativo</p>
+            </div>
+            <div class="preview-actions">
+                <button type="button" class="btn-secondary" id="previewDownloadBtn">Descargar</button>
+                <button type="button" class="icon-btn slate preview-close" onclick="cerrarPreview()" aria-label="Cerrar">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="preview-frame">
+            <div id="previewBody" class="preview-paper"></div>
+        </div>
+    </div>
 </div>
 
 <script src="/static/app.js"></script>
