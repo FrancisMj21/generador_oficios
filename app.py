@@ -39,7 +39,6 @@ def index():
 @app.route("/guardar", methods=["POST"])
 def guardar():
     data = {
-        "dni": request.form.get("dni", ""),
         "nombre": request.form["nombre"],
         "tipo_persona_id": request.form["tipo_persona_id"],
         "sexo": request.form.get("sexo", "masculino"),

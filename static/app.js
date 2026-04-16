@@ -1,5 +1,75 @@
 let seleccionados = [];
 
+function normalizarTipoPersona(valor) {
+    return String(valor || "").trim().toUpperCase();
+}
+
+function obtenerTipoSeleccionado() {
+    const seleccionado = document.querySelector('input[name="tipo_persona_id"]:checked');
+    if (!seleccionado) {
+        return "";
+    }
+    return normalizarTipoPersona(seleccionado.dataset.tipoNombre);
+}
+
+function obtenerSexoSeleccionado() {
+    const seleccionado = document.querySelector('input[name="sexo"]:checked');
+    return String(seleccionado?.value || "masculino").toLowerCase();
+}
+
+function construirCargoDesdeDatos(tipoPersona, sexo, condicion) {
+    const tipo = normalizarTipoPersona(tipoPersona);
+    const sexoNormalizado = String(sexo || "masculino").trim().toLowerCase();
+    const condicionNormalizada = String(condicion || "").trim().toUpperCase();
+
+    const mapaBase = {
+        DOCENTE: "PROFESOR",
+        AUXILIAR: "AUXILIAR DE EDUCACION",
+        "AUXILIAR DE EDUCACION": "AUXILIAR DE EDUCACION",
+        ADMINISTRATIVO: "ADMINISTRATIVO"
+    };
+
+    const mapaFemenino = {
+        PROFESOR: "PROFESORA",
+        ADMINISTRATIVO: "ADMINISTRATIVA"
+    };
+
+    const condicionesFemeninas = {
+        NOMBRADO: "NOMBRADA",
+        CONTRATADO: "CONTRATADA"
+    };
+
+    const tipoBase = mapaBase[tipo] || tipo;
+    const tipoFinal = sexoNormalizado === "femenino"
+        ? (mapaFemenino[tipoBase] || tipoBase)
+        : tipoBase;
+    const condicionFinal = sexoNormalizado === "femenino"
+        ? (condicionesFemeninas[condicionNormalizada] || condicionNormalizada)
+        : condicionNormalizada;
+
+    return [tipoFinal, condicionFinal].filter(Boolean).join(" ").trim();
+}
+
+function obtenerCargoAutomatico() {
+    const tipo = obtenerTipoSeleccionado();
+    const sexo = obtenerSexoSeleccionado();
+    const condicionSeleccionada = document.querySelector('input[name="condicion_id"]:checked');
+    const condicion = condicionSeleccionada
+        ? condicionSeleccionada.parentElement?.textContent?.trim() || ""
+        : "";
+
+    return construirCargoDesdeDatos(tipo, sexo, condicion);
+}
+
+function actualizarCargoActual() {
+    const campoCargo = document.getElementById("cargo_actual");
+    if (!campoCargo) {
+        return;
+    }
+
+    campoCargo.value = obtenerCargoAutomatico();
+}
+
 function escaparHtml(valor) {
     return String(valor ?? "")
         .replace(/&/g, "&amp;")
@@ -36,7 +106,9 @@ function obtenerPersonaPorId(id) {
 
 function construirPreviewDocumento(persona) {
     const nombre = escaparHtml(persona.nombre || "");
-    const cargo = escaparHtml(persona.cargo_actual || `${persona.tipo_persona || ""} ${persona.condicion || ""}`.trim());
+    const cargo = escaparHtml(
+        construirCargoDesdeDatos(persona.tipo_persona || "", persona.sexo || "", persona.condicion || "")
+    );
     const centro = escaparHtml(persona.centro_trabajo || "");
     const direccion = escaparHtml(persona.direccion || "");
     const provincia = escaparHtml(persona.provincia || "TACNA");
@@ -287,6 +359,19 @@ function descargarZIP() {
 
 document.addEventListener("DOMContentLoaded", () => {
     actualizarSeleccionadosUI();
+    actualizarCargoActual();
+
+    document.querySelectorAll('input[name="tipo_persona_id"]').forEach((input) => {
+        input.addEventListener("change", actualizarCargoActual);
+    });
+
+    document.querySelectorAll('input[name="sexo"]').forEach((input) => {
+        input.addEventListener("change", actualizarCargoActual);
+    });
+
+    document.querySelectorAll('input[name="condicion_id"]').forEach((input) => {
+        input.addEventListener("change", actualizarCargoActual);
+    });
 });
 
 document.addEventListener("keydown", (event) => {

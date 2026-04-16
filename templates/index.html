@@ -91,7 +91,13 @@
                     {% for tipo in tipos_persona %}
                     {% set tipo_lower = tipo.nombre.lower() %}
                     <label class="option-card">
-                        <input type="radio" name="tipo_persona_id" value="{{ tipo.id }}" {% if loop.first %}checked{% endif %}>
+                        <input
+                            type="radio"
+                            name="tipo_persona_id"
+                            value="{{ tipo.id }}"
+                            data-tipo-nombre="{{ tipo.nombre }}"
+                            {% if loop.first %}checked{% endif %}
+                        >
                         <span class="option-content">
                             <span class="option-symbol {{ 'blue' if tipo_lower == 'docente' else 'amber' if tipo_lower == 'auxiliar' else 'slate' }}">
                                 {% if tipo_lower == 'docente' %}
@@ -124,7 +130,7 @@
                 <input id="nombre" name="nombre" placeholder="Ej: Karina Paredes Ninaja" required>
 
                 <label class="field-label" for="cargo_actual">Cargo actual</label>
-                <input id="cargo_actual" name="cargo_actual" placeholder="Ej: Profesor Nombrado">
+                <input id="cargo_actual" name="cargo_actual" placeholder="Se completa automáticamente" readonly>
 
                 <label class="field-label">Sexo <span>*</span></label>
                 <div class="toggle-group">
@@ -158,10 +164,10 @@
                     <div>
                         <label class="field-label" for="provincia">Provincia <span>*</span></label>
                         <select id="provincia" name="provincia">
-                            <option value="TACNA">TACNA</option>
-                            <option value="JUNIN">JUN&Iacute;N</option>
-                            <option value="LIMA">LIMA</option>
-                            <option value="AREQUIPA">AREQUIPA</option>
+                            <option value="Tacna">Tacna</option>
+                            <option value="Tarata">Tarata</option>
+                            <option value="Candarave">Candarave</option>
+                            <option value="Jorge Basadre">Jorge Basadre</option>
                         </select>
                     </div>
                     <div>
