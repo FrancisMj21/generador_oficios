@@ -55,7 +55,7 @@ def preparar_datos_persona(persona):
     cargo = obtener_cargo_persona(persona).upper()
     centro_trabajo = normalizar_texto(persona.get("centro_trabajo", "")).upper()
     direccion = normalizar_texto(persona.get("direccion", ""))
-    provincia = normalizar_texto(persona.get("provincia", "TACNA"))
+    provincia = normalizar_texto(persona.get("provincia", ""))
     telefono = normalizar_texto(persona.get("telefono", ""))
     correo = normalizar_texto(persona.get("correo", ""))
     solicita = normalizar_texto(persona.get("solicita", ""))
