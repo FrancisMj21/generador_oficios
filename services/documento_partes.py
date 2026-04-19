@@ -39,7 +39,7 @@ def agregar_borde_parrafo(parrafo, posicion="bottom"):
     borde.set(qn("w:color"), "000000")
 
 
-def agregar_texto(parrafo, texto, bold=False, size=None, underline=False):
+def agregar_texto(parrafo, texto, bold=False, size=None, underline=False, italic = False):
     run = parrafo.add_run(texto)
     run.bold = bold
     run.italic = italic
@@ -187,7 +187,7 @@ def agregar_seccion_info(seccion, persona):
     p.paragraph_format.space_after = Pt(0)
     p.paragraph_format.line_spacing = 1
     agregar_texto(p, f"Teléfono:", underline=True, bold=True, size=Pt(9))
-    agregar_texto(p, f"{telefono}", bold=True, size=Pt(9))
+    agregar_texto(p, f" {telefono}", bold=True, size=Pt(9))
 
     # Correo
     p = seccion.add_paragraph()
@@ -257,7 +257,15 @@ def agregar_cuerpo_oficio(seccion, persona):
     sustento.paragraph_format.space_after = Pt(8)
     agregar_texto(
         sustento,
-        "De acuerdo con la R.V.M. Nº 112-2023-MINEDU, de fecha 07 de agosto del 2023 “Disposiciones que regulan los procedimientos técnicos del Escalafón Magisterial” en el sub numeral 6.1.8. se precisa que todo Acto resolutivo que reconoce al profesor nombrado el tiempo de servicio en su condición de contratado en el marco de la LRM, en el inciso a) dice, el profesor puede solicitar el reconocimiento de tiempo de servicio prestado en IIEE públicas, en condición de contratado, ante la DRE/UGEL donde se desempeña actualmente,",
+        "De acuerdo con la R.V.M. Nº 112-2023-MINEDU, de fecha 07 de agosto del 2023 “Disposiciones que regulan los procedimientos técnicos del Escalafón Magisterial” en el sub numeral 6.1.8. se precisa que todo",
+        size=Pt(8),
+    )
+    
+    
+    agregar_texto(
+        sustento,
+        "Acto resolutivo que reconoce al profesor nombrado el tiempo de servicio en su condición de contratado en el marco de la LRM, en el inciso a) dice, el profesor puede solicitar el reconocimiento de tiempo de servicio prestado en IIEE públicas, en condición de contratado, ante la DRE/UGEL donde se desempeña actualmente,",
+        italic = True,
         size=Pt(8),
     )
     
@@ -272,6 +280,7 @@ def agregar_cuerpo_oficio(seccion, persona):
     agregar_texto(
         sustento,
         "Inciso c) Para el caso de reconocimiento por los servicios prestados en la condición de contratado, se precisa que, no se deben considerar las resoluciones por reconocimiento de pago por periodos menores a treinta (30) días.",
+        italic=True,
         size=Pt(8),
     )
 
