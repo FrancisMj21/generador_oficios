@@ -42,7 +42,7 @@ def agregar_borde_parrafo(parrafo, posicion="bottom"):
 def agregar_texto(parrafo, texto, bold=False, size=None, underline=False):
     run = parrafo.add_run(texto)
     run.bold = bold
-    run.italic = True if 'italic' in locals() else False
+    run.italic = italic
     run.underline = underline
     run.font.name = FUENTE_NOMBRE
     run._element.rPr.rFonts.set(qn("w:eastAsia"), FUENTE_NOMBRE)
@@ -83,7 +83,7 @@ def agregar_encabezado_oficio(seccion):
         agregar_texto(izquierda_parrafo, "UGEL TACNA", bold=True)
 
     derecha = tabla.cell(0, 1).paragraphs[0]
-    derecha.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # derecha.alignment = WD_ALIGN_PARAGRAPH.CENTER
     derecha.paragraph_format.space_before = Pt(8)
     derecha.paragraph_format.space_after = Pt(0)
     agregar_texto(derecha, f"{LEMA_1}\n", size=FUENTE_TAMANIO_LEMA)
@@ -99,6 +99,8 @@ def agregar_pie_oficio(seccion):
     footer = seccion.footer
     footer.is_linked_to_previous = False
 
+    seccion.footer_distance = Cm(0.3)
+    
     pie = footer.add_paragraph()
     pie.alignment = WD_ALIGN_PARAGRAPH.CENTER
     pie.paragraph_format.space_before = Pt(0)
@@ -114,24 +116,18 @@ def agregar_pie_oficio(seccion):
 def agregar_seccion_info(seccion, persona):
 
     p = seccion.add_paragraph()
-    
-    p.paragraph_format.space_before = Pt(0.5)
-    p.paragraph_format.space_after = Pt(0.5)
-
-    p = seccion.add_paragraph()
-    p.paragraph_format.space_before = Pt(0)
-    p.paragraph_format.space_after = Pt(0)
+    p.paragraph_format.space_before = Pt(8)
+    p.paragraph_format.space_after = Pt(8)
     p.paragraph_format.line_spacing = 1
     agregar_texto(p, "                                            Tacna, ",size=Pt(9))
 
     # Oficio
     p = seccion.add_paragraph()
     p.paragraph_format.space_before = Pt(0)
-    p.paragraph_format.space_after = Pt(0)
+    p.paragraph_format.space_after = Pt(8)
     p.paragraph_format.line_spacing = 1
     agregar_texto(p, "OFICIO N°	          -UFESC-URRHH/UGEL.T/GOB.REG.TACNA", bold=True, underline=True, size=Pt(9))
 
-    seccion.add_paragraph()
 
     """Agrega sección de información de persona de forma estructurada."""
     tratamiento = persona.get('tratamiento', '')
@@ -145,7 +141,7 @@ def agregar_seccion_info(seccion, persona):
 
     # Tratamiento
     p = seccion.add_paragraph()
-    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_before = Pt(8)
     p.paragraph_format.space_after = Pt(0)
     p.paragraph_format.line_spacing = 1
     agregar_texto(p, f"{tratamiento}: ", bold=True, size=Pt(9))
@@ -206,23 +202,23 @@ def agregar_cuerpo_oficio(seccion, persona):
     solicita = persona.get('solicita', '')
     periodos = persona.get('periodos', [])
 
-    cud = persona.get("cud", "________")
+    cud = persona.get("cud", "")
 
     # ASUNTO
     p = seccion.add_paragraph()
-    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_before = Pt(8)
     p.paragraph_format.space_after = Pt(0)
     p.paragraph_format.line_spacing = 1
     agregar_texto(p, "ASUNTO", bold=True, size=Pt(9))
-    agregar_texto(p, "\t: FORMULO RESPUESTA", bold=True, size=Pt(9))
+    agregar_texto(p, "\t\t: FORMULO RESPUESTA", bold=True, size=Pt(9))
 
     # REFERENCIA
     p = seccion.add_paragraph()
     p.paragraph_format.space_before = Pt(0)
     p.paragraph_format.line_spacing = 1
-    p.paragraph_format.space_after = Pt(12)
+    p.paragraph_format.space_after = Pt(8)
     agregar_texto(p, "REFERENCIA", bold=True, size=Pt(9))
-    agregar_texto(p, f"\t: CUD. N° {cud}", size=Pt(9))
+    agregar_texto(p, f"\t\t: CUD. N° {cud}", size=Pt(9))
 
     # Separador
     separador = seccion.add_paragraph()
@@ -232,47 +228,63 @@ def agregar_cuerpo_oficio(seccion, persona):
     # Saludo
     saludo = seccion.add_paragraph()
     saludo.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    saludo.paragraph_format.first_line_indent = Cm(1)
+    saludo.paragraph_format.first_line_indent = Cm(3)
+    saludo.paragraph_format.line_spacing = 1
     saludo.paragraph_format.space_after = Pt(8)
     agregar_texto(
         saludo,
         "Tengo el agrado de dirigirme a usted, para expresarle mi cordial saludo y a la vez brindar "
-        f"la debida atención al documento de la referencia, mediante el cual solicita {solicita}.")
+        f"la debida atención al documento de la referencia, mediante el cual solicita {solicita}.", size=Pt(8)),
 
     # Cuerpo principal
     cuerpo = seccion.add_paragraph()
     cuerpo.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    cuerpo.paragraph_format.first_line_indent = Cm(1)
+    cuerpo.paragraph_format.first_line_indent = Cm(3)
+    cuerpo.paragraph_format.line_spacing = 1
     cuerpo.paragraph_format.space_after = Pt(8)
     agregar_texto(
         cuerpo,
         "Al respecto, se deberá tener presente que, el literal l, del artículo 41° de la Ley N° 29944, Ley de la Reforma Magisterial, "
         "expresa que los profesores tienen derecho al reconocimiento de oficio de su tiempo de servicios efectivos, del mismo modo la norma mencionada establece entre sus disposiciones complementarias, transitorias y finales, específicamente en la décima primera que para el cálculo de la asignación por tiempo de servicios se consideran los servicios prestados bajo los regímenes de la Ley N° 24029 y de la Ley 29062, incluyendo el tiempo de servicios prestado en la condición de contratado por servicios personales."
-        ,size=Pt(9),
+        ,size=Pt(8),
     )
 
     # Sustento
     sustento = seccion.add_paragraph()
     sustento.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    sustento.paragraph_format.first_line_indent = Cm(1)
+    sustento.paragraph_format.first_line_indent = Cm(3)
+    sustento.paragraph_format.line_spacing = 1
     sustento.paragraph_format.space_after = Pt(8)
     agregar_texto(
         sustento,
-        "De acuerdo con la R.V.M. Nº 112-2023-MINEDU, de fecha 07 de agosto del 2023 “Disposiciones que regulan los procedimientos técnicos del Escalafón Magisterial” en el sub numeral 6.1.8. se precisa que todo Acto resolutivo que reconoce al profesor nombrado el tiempo de servicio en su condición de contratado en el marco de la LRM, en el inciso a) dice, el profesor puede solicitar el reconocimiento de tiempo de servicio prestado en IIEE públicas, en condición de contratado, ante la DRE/UGEL donde se desempeña actualmente, adjuntando las resoluciones de contrato y las boletas o constancias de pago de remuneraciones y descuentos por dichos períodos. Inciso c) Para el caso de reconocimiento por los servicios prestados en la condición de contratado, se precisa que, no se deben considerar las resoluciones por reconocimiento de pago por periodos menores a treinta (30) días.",
-        size=Pt(9),
+        "De acuerdo con la R.V.M. Nº 112-2023-MINEDU, de fecha 07 de agosto del 2023 “Disposiciones que regulan los procedimientos técnicos del Escalafón Magisterial” en el sub numeral 6.1.8. se precisa que todo Acto resolutivo que reconoce al profesor nombrado el tiempo de servicio en su condición de contratado en el marco de la LRM, en el inciso a) dice, el profesor puede solicitar el reconocimiento de tiempo de servicio prestado en IIEE públicas, en condición de contratado, ante la DRE/UGEL donde se desempeña actualmente,",
+        size=Pt(8),
+    )
+    
+    agregar_texto(
+        sustento,
+        " adjuntando las resoluciones de contrato y las boletas o constancias de pago de remuneraciones y descuentos por dichos períodos. ",
+        italic = True,
+        bold=True,
+        size=Pt(8),
+    )
+    
+    agregar_texto(
+        sustento,
+        "Inciso c) Para el caso de reconocimiento por los servicios prestados en la condición de contratado, se precisa que, no se deben considerar las resoluciones por reconocimiento de pago por periodos menores a treinta (30) días.",
+        size=Pt(8),
     )
 
     # Cierre
     cierre = seccion.add_paragraph()
     cierre.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    cierre.paragraph_format.first_line_indent = Cm(1)
+    cierre.paragraph_format.first_line_indent = Cm(3)
+    cierre.paragraph_format.line_spacing = 1
     cierre.paragraph_format.space_after = Pt(6)
     agregar_texto(
         cierre,
-        "Por ello, luego de la revisión del expediente, se advierte que aún falta documentación sustentatoria "
-        "para continuar con el procedimiento administrativo. Bajo su responsabilidad, deberá efectuar la "
-        "subsanación correspondiente.",
-        size=Pt(9),
+        "Al respecto, se procedió a evaluar el expediente de la referencia, en el que se pudo verificar que le falta presentar las boletas y/o constancias de pago de remuneraciones que se indica. Por lo que, se exhorta cumplir con la subsanación de lo indicado para continuar con el procedimiento administrativo. Bajo su responsabilidad.",
+        size=Pt(8),
     )
 
     if periodos:
@@ -291,25 +303,26 @@ def agregar_cuerpo_oficio(seccion, persona):
     # Despedida
     despedida = seccion.add_paragraph()
     despedida.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    despedida.paragraph_format.first_line_indent = Cm(1)
+    despedida.paragraph_format.first_line_indent = Cm(3)
+    despedida.paragraph_format.line_spacing = 1
     despedida.paragraph_format.space_before = Pt(5)
     despedida.paragraph_format.space_after = Pt(6)
     agregar_texto(
         despedida,
         "Sin otro particular, hago propicia la oportunidad para reiterarle las muestras de mi especial "
         "consideración y estima personal.",
-        size=Pt(9),
+        size=Pt(8),
     )
 
     # Firma
     atentamente = seccion.add_paragraph()
     atentamente.alignment = WD_ALIGN_PARAGRAPH.CENTER
     atentamente.paragraph_format.space_after = Pt(10)
-    agregar_texto(atentamente, "Atentamente,", bold=True, size=Pt(9))
+    agregar_texto(atentamente, "Atentamente,", size=Pt(9))
 
     firma = seccion.add_paragraph()
     firma.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    firma.paragraph_format.space_after = Pt(1)
+    firma.paragraph_format.space_after = Pt(28)
     agregar_texto(firma, "GOBIERNO REGIONAL DE TACNA", bold=True, size=Pt(9))
 
     firma_linea = seccion.add_paragraph()
@@ -336,9 +349,9 @@ def agregar_cuerpo_oficio(seccion, persona):
     visto = seccion.add_paragraph()
     visto.paragraph_format.space_before = Pt(6)
     visto.paragraph_format.space_after = Pt(0)
-    agregar_texto(visto, "ECCA/UGRH", size=Pt(7))
+    agregar_texto(visto, "ECCA/UGRH", size=Pt(4))
 
     archivo = seccion.add_paragraph()
     archivo.paragraph_format.space_after = Pt(2)
-    agregar_texto(archivo, "MLBR/AAJPG", size=Pt(7))
+    agregar_texto(archivo, "MLBR/AAJPG", size=Pt(4))
 
