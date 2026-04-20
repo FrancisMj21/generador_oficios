@@ -6,6 +6,7 @@
 <title>Generador de Oficios</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 <div class="app-shell">
     <header class="page-header">
@@ -24,6 +25,23 @@
         </div>
 
         <div class="page-actions">
+            
+            <aside class="panel bulk-panel">
+                <div class="bulk-title">
+                    <span class="bulk-icon" aria-hidden="true">&#9889;</span>
+                    <h3>Generaci&oacute;n masiva</h3>
+                </div>
+                <p>Se generar&aacute;n solo los seleccionados <span id="seleccionadosCount">(0)</span></p>
+                <button type="button" class="bulk-generate" onclick="generarSeleccionados()">
+                    <span aria-hidden="true">&#9654;</span>
+                    Ejecutar generaci&oacute;n <span id="seleccionadosCountButton">(0)</span>
+                </button>
+                <button type="button" class="bulk-download" onclick="descargarZIP()">
+                    <span aria-hidden="true">&#128196;</span>
+                    Descargar ZIP de seleccionados
+                </button>
+            </aside>
+
             <div class="stats">
                 <article class="stat-card">
                     <div class="stat-icon blue">
@@ -63,135 +81,171 @@
                 </article>
             </div>
 
-            <button class="hero-action" type="button" onclick="generarSeleccionados()">
-                <span class="hero-action-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 3v12M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                <span class="hero-action-copy">
-                    <strong>Ejecutar</strong>
-                    <small>Generar seleccionados</small>
-                </span>
-            </button>
         </div>
     </header>
 
     <main class="layout-grid">
         <section class="panel form-panel">
-            <div class="section-title">
+            <div class="form-header">
                 <span class="section-title-icon">+</span>
                 <h2>Registrar nuevo</h2>
             </div>
 
-            <form id="formPersona" method="POST" action="/guardar">
-                <label class="field-label">Tipo de persona <span>*</span></label>
-                <div class="option-grid">
-                    {% for tipo in tipos_persona %}
-                    {% set tipo_lower = tipo.nombre.lower() %}
-                    <label class="option-card">
-                        <input
-                            type="radio"
-                            name="tipo_persona_id"
-                            value="{{ tipo.id }}"
-                            data-tipo-nombre="{{ tipo.nombre }}"
-                            {% if loop.first %}checked{% endif %}
-                        >
-                        <span class="option-content">
-                            <span class="option-symbol {{ 'blue' if tipo_lower == 'docente' else 'amber' if tipo_lower == 'auxiliar' else 'slate' }}">
-                                {% if tipo_lower == 'docente' %}
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="8" r="3" fill="currentColor"/>
-                                    <path d="M7.5 18a4.5 4.5 0 0 1 9 0v1h-9v-1Z" fill="currentColor"/>
-                                </svg>
-                                {% elif tipo_lower == 'auxiliar' %}
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="8" r="3" fill="currentColor"/>
-                                    <path d="M7 19a5 5 0 0 1 10 0H7Z" fill="currentColor"/>
-                                </svg>
-                                {% else %}
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <rect x="5" y="8" width="14" height="10" rx="2" fill="currentColor"/>
-                                    <path d="M10 8V6a2 2 0 0 1 4 0v2" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                                {% endif %}
+            
+            <div class="form-body">
+                <form id="formPersona" method="POST" action="/guardar">
+                    <label class="field-label">Tipo de persona <span>*</span></label>
+                    <div class="option-grid">
+                        {% for tipo in tipos_persona %}
+                        {% set tipo_lower = tipo.nombre.lower() %}
+                        <label class="option-card">
+                            <input
+                                type="radio"
+                                name="tipo_persona_id"
+                                value="{{ tipo.id }}"
+                                data-tipo-nombre="{{ tipo.nombre }}"
+                                {% if loop.first %}checked{% endif %}
+                            >
+                            <span class="option-content">
+                                <span class="option-symbol {{ 'blue' if tipo_lower == 'docente' else 'amber' if tipo_lower == 'auxiliar' else 'slate' }}">
+                                    {% if tipo_lower == 'docente' %}
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3" fill="currentColor"/>
+                                        <path d="M7.5 18a4.5 4.5 0 0 1 9 0v1h-9v-1Z" fill="currentColor"/>
+                                    </svg>
+                                    {% elif tipo_lower == 'auxiliar' %}
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3" fill="currentColor"/>
+                                        <path d="M7 19a5 5 0 0 1 10 0H7Z" fill="currentColor"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <rect x="5" y="8" width="14" height="10" rx="2" fill="currentColor"/>
+                                        <path d="M10 8V6a2 2 0 0 1 4 0v2" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </span>
+                                <span class="option-copy">
+                                    <strong>{{ tipo.nombre.upper() }}</strong>
+                                    <small>{% if tipo_lower == 'auxiliar' %}DE EDUCACI&Oacute;N{% elif tipo_lower == 'administrativo' %}(Personal de servicio){% else %}DOCENTE{% endif %}</small>
+                                </span>
                             </span>
-                            <span class="option-copy">
-                                <strong>{{ tipo.nombre.upper() }}</strong>
-                                <small>{% if tipo_lower == 'auxiliar' %}DE EDUCACI&Oacute;N{% elif tipo_lower == 'administrativo' %}(Personal de servicio){% else %}DOCENTE{% endif %}</small>
-                            </span>
-                        </span>
-                    </label>
-                    {% endfor %}
-                </div>
-
-                <label class="field-label" for="nombre">Nombre completo <span>*</span></label>
-                <input id="nombre" name="nombre" placeholder="Ej: Karina Paredes Ninaja" required>
-
-                <label class="field-label" for="cargo_actual">Cargo actual</label>
-                <input id="cargo_actual" name="cargo_actual" placeholder="Se completa automáticamente" readonly>
-
-                <label class="field-label">Sexo <span>*</span></label>
-                <div class="toggle-group">
-                    <label class="toggle-card">
-                        <input type="radio" name="sexo" value="masculino" checked>
-                        <span>MASCULINO</span>
-                    </label>
-                    <label class="toggle-card">
-                        <input type="radio" name="sexo" value="femenino">
-                        <span>FEMENINO</span>
-                    </label>
-                </div>
-
-                <label class="field-label">Condici&oacute;n <span>*</span></label>
-                <div class="toggle-group">
-                    {% for condicion in condiciones %}
-                    <label class="toggle-card">
-                        <input type="radio" name="condicion_id" value="{{ condicion.id }}" {% if loop.first %}checked{% endif %}>
-                        <span>{{ condicion.nombre.upper() }}</span>
-                    </label>
-                    {% endfor %}
-                </div>
-
-                <label class="field-label" for="centro_trabajo">Centro de trabajo <span>*</span></label>
-                <input id="centro_trabajo" name="centro_trabajo" placeholder="Ej: I.E. Juan Velasco Alvarado" required>
-
-                <label class="field-label" for="direccion">Direcci&oacute;n (domicilio) <span>*</span></label>
-                <input id="direccion" name="direccion" placeholder="Ej: CPM Leguia Mz 28 Lt 15">
-
-                <div class="inline-fields">
-                    <div>
-                        <label class="field-label" for="provincia">Provincia <span>*</span></label>
-                        <select id="provincia" name="provincia">
-                            <option value="Tacna">Tacna</option>
-                            <option value="Tarata">Tarata</option>
-                            <option value="Candarave">Candarave</option>
-                            <option value="Jorge Basadre">Jorge Basadre</option>
-                        </select>
+                        </label>
+                        {% endfor %}
                     </div>
-                    <div>
-                        <label class="field-label" for="telefono">Tel&eacute;fono <span>*</span></label>
-                        <input id="telefono" name="telefono" placeholder="995968988" required>
+
+                    <label class="field-label" for="nombre">Nombre completo <span>*</span></label>
+                    <input id="nombre" name="nombre" placeholder="Ej: Karina Paredes Ninaja" required>
+
+                    <label class="field-label" for="cargo_actual">Cargo actual</label>
+                    <input id="cargo_actual" name="cargo_actual" placeholder="Se completa automáticamente" readonly>
+
+                    <label class="field-label">Sexo <span>*</span></label>
+                    <div class="toggle-group">
+                        <label class="toggle-card">
+                            <input type="radio" name="sexo" value="masculino" checked>
+                            <span>MASCULINO</span>
+                        </label>
+                        <label class="toggle-card">
+                            <input type="radio" name="sexo" value="femenino">
+                            <span>FEMENINO</span>
+                        </label>
                     </div>
-                </div>
 
-                <label class="field-label" for="correo">Correo electr&oacute;nico</label>
-                <input id="correo" name="correo" placeholder="ejemplo@gmail.com">
+                    <label class="field-label">Condici&oacute;n <span>*</span></label>
+                    <div class="toggle-group">
+                        {% for condicion in condiciones %}
+                        <label class="toggle-card">
+                            <input type="radio" name="condicion_id" value="{{ condicion.id }}" {% if loop.first %}checked{% endif %}>
+                            <span>{{ condicion.nombre.upper() }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
 
-                <label class="field-label" for="solicita">Qu&eacute; solicita <span>*</span></label>
-                <input id="solicita" name="solicita" placeholder="Ej: reconocimiento de a&ntilde;os de servicio" required>
+                    <label class="field-label" for="centro_trabajo">Centro de trabajo <span>*</span></label>
+                    <input id="centro_trabajo" name="centro_trabajo" placeholder="Ej: I.E. Juan Velasco Alvarado" required>
 
-                <label class="field-label" for="periodos">Periodos faltantes <span>*</span></label>
-                <textarea id="periodos" name="periodos" placeholder="Julio (2015)&#10;Enero a Diciembre (2004)&#10;Marzo - Mayo (2007)"></textarea>
-                <p class="field-note">Una l&iacute;nea por periodo</p>
+                    <label class="field-label" for="direccion">Direcci&oacute;n (domicilio) <span>*</span></label>
+                    <input id="direccion" name="direccion" placeholder="Ej: CPM Leguia Mz 28 Lt 15">
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">+ Agregar a la lista</button>
-                    <button type="reset" class="btn-secondary">Limpiar</button>
-                </div>
-            </form>
+                    <div class="inline-fields">
+                        <div>
+                            <label class="field-label" for="provincia">Provincia <span>*</span></label>
+                            <select id="provincia" name="provincia">
+                                <option value="Tacna">Tacna</option>
+                                <option value="Tarata">Tarata</option>
+                                <option value="Candarave">Candarave</option>
+                                <option value="Jorge Basadre">Jorge Basadre</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label" for="telefono">Tel&eacute;fono <span>*</span></label>
+                            <input id="telefono" name="telefono" placeholder="995968988" required>
+                        </div>
+                    </div>
+
+                    <label class="field-label" for="correo">Correo electr&oacute;nico</label>
+                    <input id="correo" name="correo" placeholder="ejemplo@gmail.com">
+
+                    <label class="field-label" for="solicita">Qu&eacute; solicita <span>*</span></label>
+                    <input id="solicita" name="solicita" placeholder="Ej: reconocimiento de a&ntilde;os de servicio" required>
+
+                    <label class="field-label">Periodos faltantes <span>*</span></label>
+                    <div class="periodo-fila">
+
+                    <select id="mes_inicio">
+                        <option value="">MES</option>
+                        <option value="Enero">ENE</option>
+                        <option value="Febrero">FEB</option>
+                        <option value="Marzo">MAR</option>
+                        <option value="Abril">ABR</option>
+                        <option value="Mayo">MAY</option>
+                        <option value="Junio">JUN</option>
+                        <option value="Julio">JUL</option>
+                        <option value="Agosto">AGO</option>
+                        <option value="Septiembre">SET</option>
+                        <option value="Octubre">OCT</option>
+                        <option value="Noviembre">NOV</option>
+                        <option value="Diciembre">DIC</option>
+                    </select>
+
+                    <input type="number" id="anio_inicio" placeholder="AÑO">
+
+                    <span>-</span>
+
+                    <select id="mes_fin">
+                        <option value="">MES</option>
+                        <option value="Enero">ENE</option>
+                        <option value="Febrero">FEB</option>
+                        <option value="Marzo">MAR</option>
+                        <option value="Abril">ABR</option>
+                        <option value="Mayo">MAY</option>
+                        <option value="Junio">JUN</option>
+                        <option value="Julio">JUL</option>
+                        <option value="Agosto">AGO</option>
+                        <option value="Septiembre">SET</option>
+                        <option value="Octubre">OCT</option>
+                        <option value="Noviembre">NOV</option>
+                        <option value="Diciembre">DIC</option>
+                    </select>
+
+                    <input type="number" id="anio_fin" placeholder="AÑO">
+
+                    <button type="button" onclick="agregarPeriodo()">+</button>
+
+                    </div>
+
+                    <textarea id="periodos" name="periodos" hidden></textarea>
+
+                    <div id="lista_periodos"></div>
+                </form>
+            </div>
         </section>
+
+        <div class="form-footer">
+            <button type="submit" class="btn-primary">+ Agregar a la lista</button>
+            <button type="reset" class="btn-secondary">Limpiar</button>                
+        </div>
 
         <section class="content-column">
             <section class="panel table-panel">
@@ -309,30 +363,14 @@
                 <div class="table-footer">
                     <p>Mostrando {{ personas|length }} de {{ total }} registros</p>
                     <div class="pagination">
-                        <button type="button" class="page-btn muted">&lsaquo;</button>
-                        <button type="button" class="page-btn active">1</button>
-                        <button type="button" class="page-btn">2</button>
-                        <button type="button" class="page-btn">3</button>
-                        <button type="button" class="page-btn">&rsaquo;</button>
+                    {% for p in range(1, paginas + 1) %}
+                    <a href="/?page={{ p }}" class="page-btn {% if p == pagina %}active{% endif %}">
+                    {{ p }}
+                    </a>
+                    {% endfor %}
                     </div>
                 </div>
             </section>
-
-            <aside class="panel bulk-panel">
-                <div class="bulk-title">
-                    <span class="bulk-icon" aria-hidden="true">&#9889;</span>
-                    <h3>Generaci&oacute;n masiva</h3>
-                </div>
-                <p>Se generar&aacute;n solo los seleccionados <span id="seleccionadosCount">(0)</span></p>
-                <button type="button" class="bulk-generate" onclick="generarSeleccionados()">
-                    <span aria-hidden="true">&#9654;</span>
-                    Ejecutar generaci&oacute;n <span id="seleccionadosCountButton">(0)</span>
-                </button>
-                <button type="button" class="bulk-download" onclick="descargarZIP()">
-                    <span aria-hidden="true">&#128196;</span>
-                    Descargar ZIP de seleccionados
-                </button>
-            </aside>
         </section>
     </main>
 </div>

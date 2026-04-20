@@ -463,11 +463,14 @@ textarea {
     color: #96a3b5;
 }
 
-.form-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 96px;
-    gap: 8px;
-    margin-top: 10px;
+.form-actions{
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding:10px 0;
+    margin-top:12px;
+    border-top:1px solid var(--line);
+    z-index:5;
 }
 
 .btn-primary,
@@ -1052,4 +1055,103 @@ td {
     .doc-preview-header {
         grid-template-columns: 1fr;
     }
+}
+
+.periodo-fila{
+    display:grid;
+    grid-template-columns: 64px 58px 14px 64px 58px 32px;
+    gap:4px;
+    align-items:center;
+}
+
+.periodo-fila select,
+.periodo-fila input{
+    height:32px;
+    padding:2px 4px;
+    font-size:12px;
+}
+
+.periodo-fila select{
+    width:64px;
+}
+
+.periodo-fila input{
+    width:58px;
+    text-align:center;
+}
+
+.sep{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:32px;
+    font-weight:600;
+    font-size:14px;
+}
+
+.btn-mini{
+    width:32px;
+    height:32px;
+    padding:0;
+    font-size:16px;
+}
+
+.form-panel{
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    padding-right:8px;
+    padding-bottom:70px;
+}
+
+.page-header{
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 0;
+}
+
+.bulk-panel{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 10px;
+    width:auto;
+    background:transparent;
+    border:none;
+    box-shadow:none;
+}
+
+.bulk-generate,
+.bulk-download,
+.stat-card{
+    height:44px;
+}
+
+.bulk-title h3{
+    font-size:14px;
+    margin:0;
+}
+
+.page-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.bulk-generate{
+    min-width:200px;
+    padding:0 18px;
+}
+
+.bulk-download{
+    min-width:200px;
+    padding:0 18px;
+}
+
+.stat-card{
+    width:110px;
+    height:44px;
+    padding:8px 12px;
 }

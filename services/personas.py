@@ -37,10 +37,27 @@ def enriquecer_personas(personas, tipos_persona, condiciones):
     return personas
 
 
-def obtener_personas():
-    personas = obtener_lista("personas")
+def obtener_personas(pagina=1, limite=10):
+
+    offset = (pagina - 1) * limite
+
+    try:
+        response = (
+            supabase
+            .table("personas")
+            .select("*")
+            .range(offset, offset + limite - 1)
+            .execute()
+        )
+
+        personas = response.data or []
+
+    except Exception:
+        personas = []
+
     tipos_persona = obtener_lista("tipos_persona")
     condiciones = obtener_lista("condiciones")
+
     return enriquecer_personas(personas, tipos_persona, condiciones), tipos_persona, condiciones
 
 
@@ -68,7 +85,22 @@ def persona_desde_payload(persona_id, personas_payload):
 
 
 def guardar_persona(data):
-    supabase.table("personas").insert(data).execute()
+
+    nombre = normalizar_texto(data.get("nombre"))
+    centro = normalizar_texto(data.get("centro_trabajo"))
+
+    existente = supabase.table("personas")\
+        .select("id")\
+        .eq("nombre", nombre)\
+        .eq("centro_trabajo", centro)\
+        .limit(1)\
+        .execute()
+
+    if existente.data:
+        return existente.data[0]["id"]
+
+    nueva = supabase.table("personas").insert(data).execute()
+    return nueva.data[0]["id"]
 
 
 def eliminar_persona(persona_id):
@@ -80,3 +112,10 @@ def actualizar_estado_generado(persona_id):
         supabase.table("personas").update({"estado": "Generado"}).eq("id", persona_id).execute()
     except Exception:
         pass
+
+def contar_personas():
+    try:
+        r = supabase.table("personas").select("id", count="exact").execute()
+        return r.count or 0
+    except Exception:
+        return 0

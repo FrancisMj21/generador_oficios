@@ -11,18 +11,28 @@ from services.personas import (
     obtener_persona_por_id,
     obtener_personas,
     persona_desde_payload,
+    contar_personas
 )
 
 
 app = Flask(__name__)
 
 
+from math import ceil
+from flask import request
+
 @app.route("/")
 def index():
-    personas, tipos_persona, condiciones = obtener_personas()
 
-    total = len(personas)
-    generados = sum(1 for p in personas if str(p.get("estado", "")).lower() == "generado")
+    pagina = int(request.args.get("page", 1))
+    limite = 10
+
+    personas, tipos_persona, condiciones = obtener_personas(pagina, limite)
+
+    total = contar_personas()
+    paginas = ceil(total / limite)
+
+    generados = sum(1 for p in personas if str(p.get("estado","")).lower() == "generado")
     pendientes = total - generados
 
     return render_template(
@@ -33,6 +43,8 @@ def index():
         total=total,
         generados=generados,
         pendientes=pendientes,
+        pagina=pagina,
+        paginas=paginas
     )
 
 
