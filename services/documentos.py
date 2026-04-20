@@ -16,16 +16,16 @@ from services.personas import actualizar_estado_generado
 from utils.texto import normalizar_texto, slugify
 
 
-def nombre_archivo_oficio(persona):
-    return f"oficio_{persona['id']}_{slugify(persona.get('nombre'))}.docx"
+def nombre_archivo_oficio(data):
+    return f"oficio_{data['id']}_{slugify(data.get('nombre_completo', data.get('nombre', '')))}.docx"
 
 
-def ruta_archivo_generado(persona):
-    return GENERATED_DIR / nombre_archivo_oficio(persona)
+def ruta_archivo_generado(data):
+    return GENERATED_DIR / nombre_archivo_oficio(data)
 
 
-def obtener_lineas_periodos(persona):
-    periodos = normalizar_texto(persona.get("periodos"))
+def obtener_lineas_periodos(data):
+    periodos = normalizar_texto(data.get("periodos"))
     if not periodos:
         return []
     return [linea.strip() for linea in periodos.splitlines() if linea.strip()]
@@ -50,18 +50,18 @@ def obtener_fecha_actual():
     return f"{ahora.day} de {meses[ahora.month]} de {ahora.year}"
 
 
-def preparar_datos_persona(persona):
-    nombre_raw = normalizar_texto(persona.get("nombre", "")).upper()
-    cargo = obtener_cargo_persona(persona).upper()
-    centro_trabajo = normalizar_texto(persona.get("centro_trabajo", "")).upper()
-    direccion = normalizar_texto(persona.get("direccion", ""))
-    provincia = normalizar_texto(persona.get("provincia", ""))
-    telefono = normalizar_texto(persona.get("telefono", ""))
-    correo = normalizar_texto(persona.get("correo", ""))
-    solicita = normalizar_texto(persona.get("solicita", ""))
-    tratamiento = obtener_tratamiento(persona)
+def preparar_datos(data):
+    nombre_raw = normalizar_texto(data.get("nombre", "")).upper()
+    cargo = obtener_cargo_persona(data).upper()
+    centro_trabajo = normalizar_texto(data.get("centro_trabajo", "")).upper()
+    direccion = normalizar_texto(data.get("direccion", ""))
+    provincia = normalizar_texto(data.get("provincia", ""))
+    telefono = normalizar_texto(data.get("telefono", ""))
+    correo = normalizar_texto(data.get("correo", ""))
+    solicita = normalizar_texto(data.get("solicita", ""))
+    tratamiento = obtener_tratamiento(data)
     fecha = obtener_fecha_actual()
-    periodos = obtener_lineas_periodos(persona)
+    periodos = obtener_lineas_periodos(data)
 
     return {
         "tratamiento": tratamiento,
@@ -78,7 +78,7 @@ def preparar_datos_persona(persona):
     }
 
 
-def generar_documento_persona(persona):
+def generar_documento(data):
     documento = Document()
     configurar_documento(documento)
 
@@ -89,17 +89,16 @@ def generar_documento_persona(persona):
     agregar_pie_oficio(seccion)
 
     # Cuerpo principal (info + cuerpo)
-    data = preparar_datos_persona(persona)
-    agregar_seccion_info(documento, data)
-    agregar_cuerpo_oficio(documento, data)
+    data_prepared = preparar_datos(data)
+    agregar_seccion_info(documento, data_prepared)
+    agregar_cuerpo_oficio(documento, data_prepared)
 
-    salida = ruta_archivo_generado(persona)
+    salida = ruta_archivo_generado(data)
     documento.save(str(salida))
     return salida
 
 
-def generar_y_marcar(persona):
-    archivo = generar_documento_persona(persona)
-    actualizar_estado_generado(persona["id"])
+def generar_y_marcar(data):
+    archivo = generar_documento(data)
     return archivo
 

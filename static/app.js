@@ -54,9 +54,7 @@ function obtenerCargoAutomatico() {
     const tipo = obtenerTipoSeleccionado();
     const sexo = obtenerSexoSeleccionado();
     const condicionSeleccionada = document.querySelector('input[name="condicion_id"]:checked');
-    const condicion = condicionSeleccionada
-        ? condicionSeleccionada.parentElement?.textContent?.trim() || ""
-        : "";
+    const condicion = condicionSeleccionada?.nextElementSibling?.textContent.trim() || "";
 
     return construirCargoDesdeDatos(tipo, sexo, condicion);
 }
@@ -67,6 +65,8 @@ function actualizarCargoActual() {
         return;
     }
 
+    campoCargo.readOnly = true;
+    campoCargo.placeholder = "Se completa automáticamente";
     campoCargo.value = obtenerCargoAutomatico();
 }
 
@@ -83,20 +83,20 @@ function formatearTextoSaltos(valor) {
     return escaparHtml(valor || "-").replace(/\n/g, "<br>");
 }
 
-function obtenerPersonaPorId(id) {
+function obtenerOficioPorId(id) {
     const filas = document.querySelectorAll("#tablaDocumentos tr");
 
     for (const fila of filas) {
         const checkbox = fila.querySelector('input[type="checkbox"][value]');
-        const dataCell = fila.querySelector("[data-persona]");
+        const dataCell = fila.querySelector("[data-oficio]");
         if (!checkbox || !dataCell || checkbox.value !== String(id)) {
             continue;
         }
 
         try {
-            return JSON.parse(dataCell.dataset.persona);
+            return JSON.parse(dataCell.dataset.oficio);
         } catch (error) {
-            console.error("No se pudo leer data-persona", error);
+            console.error("No se pudo leer data-oficio", error);
             return null;
         }
     }
@@ -104,7 +104,8 @@ function obtenerPersonaPorId(id) {
     return null;
 }
 
-function construirPreviewDocumento(persona) {
+function construirPreviewDocumento(oficio) {
+    const persona = oficio; // Fields copied from persona in backend
     const nombre = escaparHtml(persona.nombre || "");
     const cargo = escaparHtml(
         construirCargoDesdeDatos(persona.tipo_persona || "", persona.sexo || "", persona.condicion || "")
@@ -209,13 +210,13 @@ function construirPreviewDocumento(persona) {
     `;
 }
 
-function obtenerPersonasSeleccionadas() {
+function obtenerOficiosSeleccionados() {
     const filas = document.querySelectorAll("#tablaDocumentos tr");
-    const personas = [];
+    const oficios = [];
 
     filas.forEach((fila) => {
         const checkbox = fila.querySelector('input[type="checkbox"][value]');
-        const dataCell = fila.querySelector("[data-persona]");
+        const dataCell = fila.querySelector("[data-oficio]");
         if (!checkbox || !dataCell) {
             return;
         }
@@ -225,13 +226,13 @@ function obtenerPersonasSeleccionadas() {
         }
 
         try {
-            personas.push(JSON.parse(dataCell.dataset.persona));
+            oficios.push(JSON.parse(dataCell.dataset.oficio));
         } catch (error) {
-            console.error("No se pudo leer data-persona", error);
+            console.error("No se pudo leer data-oficio", error);
         }
     });
 
-    return personas;
+    return oficios;
 }
 
 function actualizarSeleccionadosUI() {
@@ -290,19 +291,19 @@ function eliminar(id) {
 }
 
 function ver(id) {
-    const persona = obtenerPersonaPorId(id);
+    const oficio = obtenerOficioPorId(id);
     const modal = document.getElementById("previewModal");
     const body = document.getElementById("previewBody");
     const subtitle = document.getElementById("previewSubtitle");
     const downloadBtn = document.getElementById("previewDownloadBtn");
 
-    if (!persona || !modal || !body || !subtitle || !downloadBtn) {
+    if (!oficio || !modal || !body || !subtitle || !downloadBtn) {
         window.location = "/descargar/" + id;
         return;
     }
 
-    body.innerHTML = construirPreviewDocumento(persona);
-    subtitle.textContent = persona.nombre || "Documento administrativo";
+    body.innerHTML = construirPreviewDocumento(oficio);
+    subtitle.textContent = (oficio.nombre_completo || oficio.nombre || 'Documento administrativo');
     downloadBtn.onclick = () => descargar(id);
     modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -341,7 +342,7 @@ function generarSeleccionados() {
         },
         body: JSON.stringify({
             ids: seleccionados,
-            personas: obtenerPersonasSeleccionadas()
+            oficios: obtenerOficiosSeleccionados()
         })
     })
         .then((res) => res.json())
@@ -357,25 +358,42 @@ function descargarZIP() {
     window.location = "/descargar_zip?ids=" + encodeURIComponent(seleccionados.join(","));
 }
 
+function agregarPeriodo() {
+    const mesInicio = document.getElementById('mes_inicio').value;
+    const anioInicio = document.getElementById('anio_inicio').value;
+    const mesFin = document.getElementById('mes_fin').value;
+    const anioFin = document.getElementById('anio_fin').value;
+    if (mesInicio && anioInicio && mesFin && anioFin) {
+        const periodo = `${mesInicio} ${anioInicio} - ${mesFin} ${anioFin}`;
+        const lista = document.getElementById('lista_periodos');
+        const div = document.createElement('div');
+        div.textContent = periodo;
+        div.className = 'periodo-item';
+        div.onclick = () => div.remove();
+        lista.appendChild(div);
+        const textarea = document.getElementById('periodos');
+        textarea.value = Array.from(lista.children).map(d => d.textContent).join('\\n');
+        // Clear inputs
+        document.getElementById('mes_inicio').value = '';
+        document.getElementById('anio_inicio').value = '';
+        document.getElementById('mes_fin').value = '';
+        document.getElementById('anio_fin').value = '';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+
     actualizarSeleccionadosUI();
     actualizarCargoActual();
 
-    document.querySelectorAll('input[name="tipo_persona_id"]').forEach((input) => {
-        input.addEventListener("change", actualizarCargoActual);
+    const camposCargo = [
+        ...document.querySelectorAll('input[name="tipo_persona_id"]'),
+        ...document.querySelectorAll('input[name="sexo"]'),
+        ...document.querySelectorAll('input[name="condicion_id"]')
+    ];
+
+    camposCargo.forEach(el => {
+        el.addEventListener("change", actualizarCargoActual);
     });
 
-    document.querySelectorAll('input[name="sexo"]').forEach((input) => {
-        input.addEventListener("change", actualizarCargoActual);
-    });
-
-    document.querySelectorAll('input[name="condicion_id"]').forEach((input) => {
-        input.addEventListener("change", actualizarCargoActual);
-    });
-});
-
-document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-        cerrarPreview();
-    }
-});
+})
