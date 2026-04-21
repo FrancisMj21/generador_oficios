@@ -60,8 +60,14 @@ def preparar_datos(data):
     correo = normalizar_texto(data.get("correo", ""))
     solicita = normalizar_texto(data.get("solicita", ""))
     tratamiento = obtener_tratamiento(data)
-    fecha = obtener_fecha_actual()
+    fecha_cud_raw = data.get("fecha", "")
+    fecha_cud = ""
+
+    if fecha_cud_raw:
+        fecha_cud = datetime.strptime(fecha_cud_raw, "%Y-%m-%d").strftime("%d/%m/%Y")
     periodos = obtener_lineas_periodos(data)
+    numero_cud = normalizar_texto(data.get("numero_cud", ""))
+
 
     return {
         "tratamiento": tratamiento,
@@ -73,8 +79,9 @@ def preparar_datos(data):
         "telefono": telefono,
         "correo": correo,
         "solicita": solicita,
-        "fecha": fecha,
+        "fecha_cud": fecha_cud,
         "periodos": periodos,
+        "numero_cud": numero_cud,
     }
 
 

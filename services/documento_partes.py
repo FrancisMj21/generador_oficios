@@ -197,12 +197,13 @@ def agregar_seccion_info(seccion, persona):
     agregar_texto(p, f"Correo electrónico:", underline=True, bold=True , size=Pt(9))
     agregar_texto(p, f" {correo}", bold=True, size=Pt(9))
 
-def agregar_cuerpo_oficio(seccion, persona):
+def agregar_cuerpo_oficio(seccion, data):
     """Agrega cuerpo completo del oficio."""
-    solicita = persona.get('solicita', '')
-    periodos = persona.get('periodos', [])
-
-    cud = persona.get("cud", "")
+    solicita = data.get('solicita', '')
+    periodos = data.get('periodos', [])
+    
+    fecha_cud = data.get('fecha_cud', '')
+    cud = data.get("numero_cud", "")
 
     # ASUNTO
     p = seccion.add_paragraph()
@@ -218,7 +219,7 @@ def agregar_cuerpo_oficio(seccion, persona):
     p.paragraph_format.line_spacing = 1
     p.paragraph_format.space_after = Pt(8)
     agregar_texto(p, "REFERENCIA", bold=True, size=Pt(9))
-    agregar_texto(p, f"\t\t: CUD. N° {cud}", size=Pt(9))
+    agregar_texto(p, f"\t\t: CUD. N° {cud}({fecha_cud})",  size=Pt(9))
 
     # Separador
     separador = seccion.add_paragraph()

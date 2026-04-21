@@ -1,6 +1,8 @@
 from datetime import datetime
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile
+from docx2pdf import convert
+from pathlib import Path
 
 from config import supabase
 
@@ -62,11 +64,12 @@ def index():
 
 @app.route("/guardar", methods=["POST"])
 def guardar():
+    print("FORM DATA:", request.form)
     data_persona = {
         "nombre": request.form["nombre"],
-        "tipo_persona_id": request.form["tipo_persona_id"],
+        "tipo_persona_id": int(request.form.get("tipo_persona_id")) if request.form.get("tipo_persona_id") else None,
         "sexo": request.form.get("sexo", "masculino"),
-        "condicion_id": request.form["condicion_id"],
+        "condicion_id": int(request.form.get("condicion_id")) if request.form.get("condicion_id") else None,
         "centro_trabajo": request.form["centro_trabajo"],
         "telefono": request.form["telefono"],
         "correo": request.form.get("correo", ""),
@@ -79,6 +82,7 @@ def guardar():
         "numero_cud": request.form.get("numero_cud", ""),
         "solicita": request.form.get("solicita", ""),
         "periodos": request.form.get("periodos", ""),
+        "fecha": request.form.get("fecha", "")
     }
     cud_id = guardar_cud(cud_data)
     guardar_oficio(persona_id, cud_id)
@@ -180,6 +184,24 @@ def descargar_zip():
     nombre_zip = f"oficios_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
     return send_file(buffer, as_attachment=True, download_name=nombre_zip, mimetype="application/zip")
 
+def convertir_docx_a_pdf(docx_path):
+
+    pdf_path = Path(str(docx_path).replace(".docx",".pdf"))
+
+    convert(docx_path, pdf_path)
+
+    return pdf_path
+
+@app.route("/preview/<int:oficio_id>")
+def preview(oficio_id):
+
+    oficio = obtener_oficio_por_id(oficio_id)
+
+    archivo_docx = generar_y_marcar(oficio)
+
+    pdf = convertir_docx_a_pdf(archivo_docx)
+
+    return send_file(pdf)
 
 if __name__ == "__main__":
     app.run(debug=True)

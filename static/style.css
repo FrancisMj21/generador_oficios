@@ -41,9 +41,7 @@ body {
     color: var(--text);
 }
 
-body {
-    padding: 2px 4px;
-}
+
 
 body.modal-open {
     overflow: hidden;
@@ -233,12 +231,14 @@ textarea {
     min-width: 0;
 }
 
-.form-panel {
-    padding: 14px 14px 12px;
+.form-panel{
+    display:flex;
+    flex-direction:column;
+    height:calc(100vh - 120px);
 }
 
 .table-panel {
-    padding: 10px 10px 6px;
+    padding: 15px 15px 6px;
     overflow: hidden;
 }
 
@@ -1103,10 +1103,10 @@ td {
 }
 
 .form-body{
-    max-height: calc(100vh - 210px);
-    overflow-y: auto;
-    padding-right:8px;
-    padding-bottom:70px;
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding-right:4px;
 }
 
 .page-header{
@@ -1161,3 +1161,16 @@ td {
     height:44px;
     padding:8px 12px;
 }
+
+#contenedor_periodos{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.periodo-fila{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+

@@ -87,7 +87,11 @@
                 <h2>Registrar nuevo</h2>
             </div>
             <div class="form-body">
-                <form id="formPersona" method="POST" action="/guardar">
+<form id="formPersona" method="POST" action="/guardar" onsubmit="return updatePeriodos();">
+</xai:function_call
+
+<xai:function_call name="edit_file">
+<parameter name="path">templates/index.html
                     <label class="field-label">Tipo de persona <span>*</span></label>
                     <div class="option-grid">
                         {% for tipo in tipos_persona %}
@@ -96,9 +100,10 @@
                             <input 
                                 type="radio" 
                                 name="tipo_persona_id" 
-                                value="{{ tipo.id }}" 
-                                data-tipo-nombre="{{ tipo.nombre }}" 
-                                data-tipo-lower="{% if loop.first %}checked{% endif %} 
+                                value="{{ tipo.id }}"
+                                data-tipo-nombre="{{tipo.nombre}}"
+                                required
+                                {% if loop.first %}checked{% endif %}
                             >
                             <span class="option-content">
                                 <span class="option-symbol {{ 'blue' if tipo_lower == 'docente' else 'amber' if tipo_lower == 'auxiliar' else 'slate' }}">
@@ -181,16 +186,24 @@
                     <label class="field-label" for="correo">Correo electr&oacute;nico</label>
                     <input id="correo" name="correo" placeholder="ejemplo@gmail.com">
 
-                    <label class="field-label" for="numero_cud">Numero CUD <span>*</span></label>
+                    <label class="field-label" for="numero_cud">Numero CUD Ref<span>*</span></label>
                     <input id="numero_cud" name="numero_cud" placeholder="Ej: 1016344/23" required>
+
+                    <label class="field-label" for="fecha">Fecha CUD Ref<span>*</span></label>
+                    <input id="fecha" name="fecha" type="date" required>
 
                     <label class="field-label" for="solicita">Qu&eacute; solicita <span>*</span></label>
                     <input id="solicita" name="solicita" placeholder="Ej: reconocimiento de a&ntilde;os de servicio" required>
 
                     <label class="field-label">Periodos faltantes <span>*</span></label>
+                    <div id="contenedor_periodos">
                     <div class="periodo-fila">
 
-                    <select id="mes_inicio">
+<select>
+</xai:function_call
+
+<xai:function_call name="edit_file">
+<parameter name="path">templates/index.html
                         <option value="">MES</option>
                         <option value="Enero">ENE</option>
                         <option value="Febrero">FEB</option>
@@ -205,12 +218,20 @@
                         <option value="Noviembre">NOV</option>
                         <option value="Diciembre">DIC</option>
                     </select>
+                    
+                    <input type="number" placeholder="AÑO">
+</xai:function_call
 
-                    <input type="number" id="anio_inicio" placeholder="AÑO">
+<xai:function_call name="edit_file">
+<parameter name="path">templates/index.html
 
                     <span>-</span>
 
-                    <select id="mes_fin">
+<select>
+</xai:function_call
+
+<xai:function_call name="edit_file">
+<parameter name="path">templates/index.html
                         <option value="">MES</option>
                         <option value="Enero">ENE</option>
                         <option value="Febrero">FEB</option>
@@ -226,22 +247,28 @@
                         <option value="Diciembre">DIC</option>
                     </select>
 
-                    <input type="number" id="anio_fin" placeholder="AÑO">
+                    <input type="number" placeholder="AÑO">
+</xai:function_call
+
+<xai:function_call name="edit_file">
+<parameter name="path">TODO.md
 
                     <button type="button" onclick="agregarPeriodo()">+</button>
+                    <button type="button" onclick="eliminarPeriodo(this)">-</button>
 
                     </div>
 
-                    <textarea id="periodos" name="periodos" hidden></textarea>
+                    <input type="hidden" id="periodos" name="periodos">
 
                     <div id="lista_periodos"></div>
-                </form>
+                
+                    <div class="form-footer">
+                        <button type="submit" class="btn-primary">+ Agregar a la lista</button>
+                        <button type="reset" class="btn-secondary">Limpiar</button>                
+                    </div>
 
+                </form>
             </div>
-                <div class="form-footer">
-                    <button type="submit" form="formPersona" class="btn-primary">+ Agregar a la lista</button>
-                    <button type="reset" form="formPersona" class="btn-secondary">Limpiar</button>                
-                </div>
         </section>
 
         <section class="content-column">
@@ -282,7 +309,11 @@
                             <tr>
                                 <th class="checkbox-cell">
                                     <label class="checkbox">
-                                        <input type="checkbox" id="selectAll" onchange="toggleTodos(this.checked)">
+                                        <input type="checkbox" id="selectAllForm" onchange="toggleTodosForm(this.checked)">
+</xai:function_call
+
+<xai:function_call name="edit_file">
+<parameter name="path">templates/index.html
                                         <span></span>
                                     </label>
                                 </th>
@@ -306,12 +337,12 @@
                                 <td class="mono-id" data-oficio='{{ doc|tojson|safe }}'>{{ "%03d"|format(doc.id|int) if doc.id is number or (doc.id|string).isdigit() else doc.id }}</td>
                                 <td class="name-cell">{{ doc.nombre_completo or doc.nombre }}</td>
                                 <td>{{ doc.cud or '-' }}</td>
-                                
+                                    <td>
                                         <span class="status-pill {{ 'generated' if estado_generado else 'pending' }}">
-                                        <span class="status-dot"></span>
-                                        {{ doc.estado or "Pendiente" }}
-                                    </span>
-                                </td>
+                                            <span class="status-dot"></span>
+                                            {{ doc.estado or "Pendiente" }}
+                                        </span>
+                                    </td>
                                 <td>
                                     <div class="row-actions">
                                         <button type="button" class="icon-btn blue" onclick="descargar('{{ doc.id }}')" aria-label="Descargar">

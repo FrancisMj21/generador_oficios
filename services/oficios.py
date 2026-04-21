@@ -7,7 +7,7 @@ def obtener_oficios(pagina=1, limite=10):
     try:
         response = (supabase
             .table('oficios')
-            .select('*, personas:nombre, cud:numero_cud')
+            .select('*, personas(nombre), cud(numero_cud)')
             .range(offset, offset + limite - 1)
             .order('fecha_generado', desc=True)
             .execute())
@@ -36,24 +36,34 @@ def enriquecer_oficio(oficio):
 
 def obtener_oficios_enriquecidos(pagina=1, limite=10):
     oficios_raw, tipos, conds = obtener_oficios(pagina, limite)
-    # Enrich if needed
+
     for o in oficios_raw:
-        o['nombre_completo'] = o['personas']['nombre']
-        o['cud'] = o['cud']['numero_cud']
+        persona = o.get("personas")
+        cud = o.get("cud")
+
+        o["nombre_completo"] = persona["nombre"] if persona else ""
+        o["cud"] = cud["numero_cud"] if cud else ""
+
     return oficios_raw, tipos, conds
 
 
 def obtener_oficio_por_id(oficio_id):
     try:
-        response = supabase.table('oficios').select('*, personas(*), cud(*)').eq('id', oficio_id).single().execute()
+        response = supabase.table('oficios').select(
+            '*, personas(*, tipos_persona(nombre), condiciones(nombre)), cud(*)'
+        ).eq('id', oficio_id).single().execute()
         if response.data:
             data = response.data
             data['nombre_completo'] = data['personas']['nombre']
-            data['cud'] = data['cud']['numero_cud'] if data['cud'] else ''
+            data['numero_cud'] = data['cud']['numero_cud'] if data['cud'] else ''
+            data['periodos'] = data['cud']['periodos'] if data['cud'] else ''
+            data['solicita'] = data['cud']['solicita'] if data['cud'] else ''
+            data['fecha'] = data['cud']['fecha'] if data['cud'] else ''
             # Add tipo/cond from personas
-            data['tipo_persona'] = data['personas'].get('tipo_persona', '')
-            data['condicion'] = data['personas'].get('condicion', '')
+            data['tipo_persona'] = data['personas']['tipos_persona']['nombre'] if data['personas'].get('tipos_persona') else ''
+            data['condicion'] = data['personas']['condiciones']['nombre'] if data['personas'].get('condiciones') else ''
             data['centro_trabajo'] = data['personas'].get('centro_trabajo', '')
+            
             # Copy other needed for docx
             for k, v in data['personas'].items():
                 if k not in data:

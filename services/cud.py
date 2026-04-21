@@ -18,7 +18,7 @@ def guardar_cud(data):
     # Create new
     nueva_data = {
         'numero_cud': numero_cud,
-        'fecha': date.today().isoformat(),
+        'fecha': data.get('fecha'),
         'solicita': normalizar_texto(data.get('solicita', '')),
         'periodos': normalizar_texto(data.get('periodos', '')),
     }

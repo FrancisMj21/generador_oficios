@@ -282,6 +282,11 @@ function toggleTodos(checked) {
     actualizarSeleccionadosUI();
 }
 
+function toggleTodosForm(checked) {
+    // Form select all - currently no checkboxes in form, stub for future
+    console.log("Form select all toggled:", checked);
+}
+
 function eliminar(id) {
     if (confirm("Eliminar registro?")) {
         fetch("/eliminar/" + id, {
@@ -290,23 +295,8 @@ function eliminar(id) {
     }
 }
 
-function ver(id) {
-    const oficio = obtenerOficioPorId(id);
-    const modal = document.getElementById("previewModal");
-    const body = document.getElementById("previewBody");
-    const subtitle = document.getElementById("previewSubtitle");
-    const downloadBtn = document.getElementById("previewDownloadBtn");
-
-    if (!oficio || !modal || !body || !subtitle || !downloadBtn) {
-        window.location = "/descargar/" + id;
-        return;
-    }
-
-    body.innerHTML = construirPreviewDocumento(oficio);
-    subtitle.textContent = (oficio.nombre_completo || oficio.nombre || 'Documento administrativo');
-    downloadBtn.onclick = () => descargar(id);
-    modal.hidden = false;
-    document.body.classList.add("modal-open");
+function ver(id){
+    window.open("/descargar/" + id, "_blank");
 }
 
 function cerrarPreview() {
@@ -358,30 +348,72 @@ function descargarZIP() {
     window.location = "/descargar_zip?ids=" + encodeURIComponent(seleccionados.join(","));
 }
 
-function agregarPeriodo() {
-    const mesInicio = document.getElementById('mes_inicio').value;
-    const anioInicio = document.getElementById('anio_inicio').value;
-    const mesFin = document.getElementById('mes_fin').value;
-    const anioFin = document.getElementById('anio_fin').value;
-    if (mesInicio && anioInicio && mesFin && anioFin) {
-        const periodo = `${mesInicio} ${anioInicio} - ${mesFin} ${anioFin}`;
-        const lista = document.getElementById('lista_periodos');
-        const div = document.createElement('div');
-        div.textContent = periodo;
-        div.className = 'periodo-item';
-        div.onclick = () => div.remove();
-        lista.appendChild(div);
-        const textarea = document.getElementById('periodos');
-        textarea.value = Array.from(lista.children).map(d => d.textContent).join('\\n');
-        // Clear inputs
-        document.getElementById('mes_inicio').value = '';
-        document.getElementById('anio_inicio').value = '';
-        document.getElementById('mes_fin').value = '';
-        document.getElementById('anio_fin').value = '';
+function agregarPeriodo(){
+    const contenedor = document.getElementById("contenedor_periodos")
+
+    const fila = document.querySelector(".periodo-fila")
+
+    const nueva = fila.cloneNode(true)
+
+    nueva.querySelectorAll("input").forEach(i => i.value = "")
+    nueva.querySelectorAll("select").forEach(s => s.selectedIndex = 0)
+
+    contenedor.appendChild(nueva)
+    updatePeriodos();
+}
+
+function eliminarPeriodo(btn){
+
+    const contenedor = document.getElementById("contenedor_periodos")
+
+    const filas = contenedor.querySelectorAll(".periodo-fila")
+
+    if(filas.length === 1){
+        alert("Debe existir al menos un periodo")
+        return
     }
+
+    btn.parentElement.remove()
+    updatePeriodos();
+}
+
+function updatePeriodos() {
+    const contenedor = document.getElementById("contenedor_periodos");
+    if (!contenedor) return true;
+
+    const filas = contenedor.querySelectorAll(".periodo-fila");
+    const periodos = [];
+
+    filas.forEach(fila => {
+        const selects = fila.querySelectorAll("select");
+        const inputs = fila.querySelectorAll("input[type='number']");
+        const mesInicioSel = selects[0];
+        const anioInicioInput = inputs[0];
+        const mesFinSel = selects[1];
+        const anioFinInput = inputs[1];
+
+        const mesInicio = mesInicioSel ? mesInicioSel.value : "";
+        const anioInicio = anioInicioInput ? anioInicioInput.value : "";
+        const mesFin = mesFinSel ? mesFinSel.value : "";
+        const anioFin = anioFinInput ? anioFinInput.value : "";
+
+        if (mesInicio && anioInicio && mesFin && anioFin) {
+            const periodo = `${mesInicio}-${anioInicio} - ${mesFin}-${anioFin}`;
+            periodos.push(periodo);
+        }
+    });
+
+    const hiddenPeriodos = document.getElementById("periodos");
+    if (hiddenPeriodos) {
+        hiddenPeriodos.value = periodos.join("\\n");
+    }
+
+    // Return true if at least one valid period or field not required
+    return periodos.length > 0 || true;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    updatePeriodos(); // Initial
 
     actualizarSeleccionadosUI();
     actualizarCargoActual();
@@ -396,4 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
         el.addEventListener("change", actualizarCargoActual);
     });
 
+    // Hook period field changes
+    const contenedor = document.getElementById("contenedor_periodos");
+    if (contenedor) {
+        contenedor.addEventListener("change", updatePeriodos);
+        contenedor.addEventListener("input", updatePeriodos);
+    }
 })
